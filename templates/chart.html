@@ -1,26 +1,54 @@
 <!DOCTYPE html>
 <html>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
 
-<div style="width:150%;">
-    <canvas id="canvas"></canvas>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=devie-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+</head>
+
+<script>
+    //var get_Data = {{ send_Data | tojson }};
+
+</script>
+
+<div>
+    <select name="change_size" onchange="changeSizeSelect()">
+        <script>
+
+            var useful_Size = {{ useful_size | tojson }};
+
+            for (i = 0; i < useful_Size.length; i++) {
+                document.write("<option>" + useful_Size[i] + "</option>");
+            }
+
+            function changeSizeSelect() {
+                
+                chart1.update();
+            }
+        </script>
+    </select>
+</div>
+
+<div style="width:100%;">
+    <canvas id="chart1"></canvas>
 </div>
 
 <script>
-new Chart(document.getElementById("canvas"), {
-    type: 'line',
-    data: {
-        labels: {{ xlabels | tojson }},
+    var chart1 = new Chart(document.getElementById("chart1"), {
+        type: 'line',
+        data: {
+            labels: {{ xlabels | tojson }},
         datasets: [{
             label: '{{ label }}',
             data: {{ dataset | tojson }},
-            borderColor: "rgba(247, 16, 74, 1)",
-            fill: false,
-            lineTension: 0
+        borderColor: "rgba(247, 16, 74, 1)",
+        fill: false,
+        lineTension: 0
         }]
     },
-    options: {
+        options: {
         responsive: true,
         title: {
             display: true,
@@ -54,4 +82,5 @@ new Chart(document.getElementById("canvas"), {
 });
 
 </script>
+
 </html>

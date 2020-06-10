@@ -3,14 +3,14 @@ from flask import Flask, request, render_template
 import requests
 import json
 import math
-import datetime
 
 app = Flask(__name__)
 
 @app.route('/')
 def root():
-    result = requestURL("17088")
-    volume = len(result['data']['txOrderbooks']['txOrderbook'])
+    produtcId = '17088'
+    request_Data = requestUrl(produtcId)
+    volume = len(request_Data['data']['txOrderbooks']['txOrderbook'])
 
     '''
     !! 입찰가 판매가 가져올때 필요한 소스 !!
@@ -19,27 +19,32 @@ def root():
     page_count = math.ceil(result['recordsTotal'] / 10)
 
     for i in range(page_count):
-        result = requestURL("17088", i)
+        result = requestUrl("17088", i)
         all_result.extend(result['data'])
     '''
 
-    '''
-    !! 거래량 가져오는 소스 !!
+    label = produtcId
 
-    str(result['data']['txOrderbooks']['txOrderbook'][:10])
-    '''
-
-    label = '17088'
+    send_Data = request_Data['data']['txOrderbooks']['txOrderbook'][:volume]
     xlabels = []
     dataset = []
+    size = []
+    useful_size = []
+    
 
-    for i in result['data']['txOrderbooks']['txOrderbook'][:volume]:
-        xlabels.append(i['tx_date'][:10])
-        dataset.append(i['price'])
+    for result_Data in request_Data['data']['txOrderbooks']['txOrderbook'][:volume]:
+        xlabels.append(result_Data['tx_date'][:10])
+        dataset.append(result_Data['price'])
+        size.append(result_Data['product_option'])
         
+    xlabels.reverse()
+    dataset.reverse()
+    size.reverse()
+    useful_size = sorted(list(set(size)))
+
     return render_template('chart.html', **locals())
 
-def requestURL(ProductId):
+def requestUrl(ProductId):
     params = {
         "rxNo": ProductId,
     }
