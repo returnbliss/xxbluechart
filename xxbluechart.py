@@ -12,6 +12,9 @@ def root():
     request_Data = requestUrl(produtcId)
     volume = len(request_Data['data']['txOrderbooks']['txOrderbook'])
 
+    label = produtcId
+    send_Data = request_Data['data']['txOrderbooks']['txOrderbook'][:volume]
+    
     '''
     !! 입찰가 판매가 가져올때 필요한 소스 !!
 
@@ -21,26 +24,24 @@ def root():
     for i in range(page_count):
         result = requestUrl("17088", i)
         all_result.extend(result['data'])
-    '''
-
-    label = produtcId
-
-    send_Data = request_Data['data']['txOrderbooks']['txOrderbook'][:volume]
+    
+    !! 파이썬에서 자료 처리하여 html로 넘기는 소스 !!
     xlabels = []
     dataset = []
     size = []
     useful_size = []
     
-
     for result_Data in request_Data['data']['txOrderbooks']['txOrderbook'][:volume]:
-        xlabels.append(result_Data['tx_date'][:10])
-        dataset.append(result_Data['price'])
         size.append(result_Data['product_option'])
+        if result_Data['product_option'] == '260':
+            xlabels.append(result_Data['tx_date'][:10])
+            dataset.append(result_Data['price'])
         
     xlabels.reverse()
     dataset.reverse()
     size.reverse()
     useful_size = sorted(list(set(size)))
+    '''
 
     return render_template('chart.html', **locals())
 
